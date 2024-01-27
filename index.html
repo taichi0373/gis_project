@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+    http-equiv="X-UA-Compatible" ontent="ie=edge">
+  <title>交通状況可視化マップ</title>
+  <!-- CDN Bootstrapを読み込む -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+  <!-- CDN Leafletを読み込む -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
+  <!-- Leaflet Control OSM Geocoderを読み込む -->
+  <link rel="stylesheet" href="leaflet-control-osm-geocoder/Control.OSMGeocoder.css" />
+  <script src="leaflet-control-osm-geocoder/Control.OSMGeocoder.js"></script>
+
+  <!-- Leaflet.Locate を読み込む-->
+  <script src="
+    https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.79.0/dist/L.Control.Locate.min.js
+    "></script>
+  <link href="
+    https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.79.0/dist/L.Control.Locate.min.css
+    " rel="stylesheet">
+
+  <!-- CSSファイルを読み込む -->
+  <link rel="stylesheet" href="./css/index.css">
+
+  <!-- leaflet-heat.jsを読み込む -->
+  <script src="./Leaflet.heat/dist/leaflet-heat.js"></script>
+</head>
+
+
+
+<body>
+  <div id="errorModal" class="modal">
+    <div class="modal-content">
+      <div class="flex">
+        <img src="./css/images/exclamation-triangle.svg" alt="" style="width:17px; margin-bottom:1px;">
+        <span class="ms-1" id="errorMessage"></span>
+      </div>
+
+
+    </div>
+  </div>
+  <div id="errorModal-sm" class="modal">
+    <div class="modal-content">
+      <div class="flex">
+        <img src="./css/images/exclamation-triangle.svg" alt="" style="width:17px; margin-bottom:1px;">
+        <span class="ms-1" id="errorMessage-sm"></span>
+      </div>
+
+    </div>
+  </div>
+
+  <header>
+    <!-- PC用 -->
+    <nav class="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark" id="pc-nav">
+      <div class="container-fluid">
+        <a class="navbar-brand ms-2" href="#">くまもと事故マップ</a>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item ms-2 me-2">
+              <a class="nav-link active" href="#">ホーム</a>
+            </li>
+            <li class="nav-item ms-2 me-2">
+            <li class="nav-item ms-2 me-2"><a class="nav-link" href="signup.html">新規登録</a></li>
+            <li class="nav-item ms-2 me-2"><a class="nav-link" href="login.html">ログイン</a></li>
+            <li class="nav-item ms-2 me-2"><a class="nav-link" href="#" onclick="logout()">ログアウト</a></li>
+            </li>
+          </ul>
+          <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+            <li class="nav-item ms-2 me-2" style="min-width: 70px;">
+              <a class="nav-link" href="#" id="username_link"></a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- スマホ用 -->
+    <nav class="navbar navbar-dark bg-dark fixed-top" id="sm-nav">
+      <div class="container-fluid">
+        <a class="navbar-brand ms-2" href="#">くまもと事故マップ</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasDarkNavbar"
+          aria-controls="offcanvasDarkNavbar" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="offcanvas offcanvas-end text-bg-dark m-0" tabindex="-1" id="offcanvasDarkNavbar"
+          aria-labelledby="offcanvasDarkNavbarLabel">
+          <div class="offcanvas-header mt-3 ms-3 me-4 p-0">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item ms-2 me-2">
+                <a class="nav-link active" href="#">ホーム</a>
+              </li>
+              <li class="nav-item ms-2 me-2">
+                <a class="nav-link" href="signup.html">新規登録</a>
+              </li>
+              <li class="nav-item ms-2 me-2">
+                <a class="nav-link" href="login.html">ログイン</a>
+              </li>
+              <li class="nav-item ms-2 me-2">
+                <a class="nav-link" href="#" onclick="logout()">ログアウト</a>
+              </li>
+            </ul>
+            <ul class="navbar-nav ms-auto me-3 mb-2 mb-lg-0">
+              <li class="nav-item ms-2 me-2" style="min-width: 70px;">
+                <a class="nav-link" href="#" id="username_link-sm"></a>
+              </li>
+            </ul>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"
+              aria-label="Close"></button>
+          </div>
+
+          <div class="offcanvas-body m-0 p-0">
+
+            <div class="container-nav-left">
+              <div class="header-left-container">
+                <div style="margin: 5px; padding-left: 5px">
+                  <h6>表示条件を絞り込む</h6>
+                </div>
+
+                <div class="layer0 p-2 border-bottom border-light-subtle">
+                  <div class="layer-header">
+                    <div class="layer-title">
+                      <span>発生年</span>
+                    </div>
+                    <div class="layer-button-sm">
+                      <button type="button" class="btn btn-outline-secondary btn-sm" data-action="clear"
+                        value="10-sm">クリア</button>
+                    </div>
+                    <div class="layer-button-sm">
+                      <button type="button" class="btn btn-secondary btn-sm" data-action="select"
+                        value="10-sm">すべて選ぶ</button>
+                    </div>
+                  </div>
+                  <div class="d-flex flex-wrap">
+                    <div class="layer-container" id="2019-div-sm">
+                      <input class="form-check-input" type="checkbox" value="2019" id="2019-sm" layer-code="1-sm"
+                        layer-number="10-sm" onchange="this.checked" checked>
+                      <label class="form-check-label" for="2019-sm">2019</label>
+                    </div>
+                    <div class="layer-container" id="2020-div-sm">
+                      <input class="form-check-input" type="checkbox" value="2020" id="2020-sm" layer-code="1-sm"
+                        layer-number="10-sm" onchange="this.checked" checked>
+                      <label class="form-check-label" for="2020-sm">2020</label>
+                    </div>
+                    <div class="layer-container" id="2021-div-sm">
+                      <input class="form-check-input" type="checkbox" value="2021" id="2021-sm" layer-code="1-sm"
+                        layer-number="10-sm" onchange="this.checked" checked>
+                      <label class="form-check-label" for="2021-sm">2021</label>
+                    </div>
+                    <div class="layer-container" id="2022-div-sm">
+                      <input class="form-check-input" type="checkbox" value="2022" id="2022-sm" layer-code="1-sm"
+                        layer-number="10-sm" onchange="this.checked" checked>
+                      <label class="form-check-label" for="2022-sm">2022</label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="btn-container">
+                  <div class="btn-map-clear">
+                    <button type="button" class="btn btn-outline-light btn-sm" id="map-clear-sm">地図をクリア</button>
+                  </div>
+                  <div class="btn-map-show">
+                    <button type="button" class="btn btn-light btn-sm" id="show-button-sm">表示する</button>
+                  </div>
+                </div>
+
+              </div>
+
+              <div class="scroll-content" id="layer-control">
+
+                <div class="layer1 p-2 border-bottom border-light-subtle">
+
+                  <div class="layer-header">
+                    <div class="layer-title">
+                      <span>事故内容</span>
+                    </div>
+                    <div class="layer-button-sm">
+                      <button type="button" class="btn btn-outline-secondary btn-sm" data-action="clear"
+                        value="0-sm">クリア</button>
+                    </div>
+                    <div class="layer-button-sm">
+                      <button type="button" class="btn btn-secondary btn-sm" data-action="select"
+                        value="0-sm">すべて選ぶ</button>
+                    </div>
+                  </div>
+
+                  <div class="d-flex flex-wrap">
+                    <div class="layer-container" id="accident_detail1-div-sm">
+                      <input class="form-check-input" type="checkbox" value="accident_detail1" id="accident_detail1-sm"
+                        layer-code="2-sm" layer-number="0-sm" onchange="this.checked" checked>
+                      <label class="form-check-label" for="accident_detail1-sm">死亡事故</label>
+                    </div>
+                    <div class="layer-container" id="accident_detail2-div-sm">
+                      <input class="form-check-input" type="checkbox" value="accident_detail2" id="accident_detail2-sm"
+                        layer-code="2-sm" layer-number="0-sm" onchange="this.checked" checked>
+                      <label class="form-check-label" for="accident_detail2-sm">負傷事故</label>
+                    </div>
+                    <div class="layer-container" id="accident_detail3-div-sm">
+                      <input class="form-check-input" type="checkbox" value="accident_detail3" id="accident_detail3-sm"
+                        layer-code="2-sm" layer-number="0-sm" onchange="this.checked" checked>
+                      <label class="form-check-label" for="accident_detail3-sm">損傷なし事故</label>
+                    </div>
+                    <div class="form-check-sub">
+                    </div>
+                  </div>
+
+                </div>
+
+                <div class="layer2 p-2 border-bottom border-light-subtle">
+
+                  <div class="layer-header">
+                    <div class="layer-title">
+                      <span>曜日</span>
+                    </div>
+                    <div class="layer-button-sm">
+                      <button type="button" class="btn btn-outline-secondary btn-sm" data-action="clear"
+                        value="1-sm">クリア</button>
+                    </div>
+                    <div class="layer-button-sm">
+                      <button type="button" class="btn btn-secondary btn-sm" data-action="select"
+                        value="1-sm">すべて選ぶ</button>
+                    </div>
+                  </div>
+
+                  <div class="d-flex flex-wrap">
+                    <div class="layer-container" id="monday-div-sm">
+                      <input class="form-check-input" type="checkbox" value="monday" id="monday-sm" layer-code="2-sm"
+                        layer-number="1-sm" onchange="this.checked" checked>
+                      <label class="form-check-label" for="monday-sm">月曜日</label>
+                    </div>
+                    <div class="layer-container" id="tuesday-div-sm">
+                      <input class="form-check-input" type="checkbox" value="tuesday" id="tuesday-sm" layer-code="2-sm"
+                        layer-number="1-sm" onchange="this.checked" checked>
+                      <label class="form-check-label" for="tuesday-sm">火曜日</label>
+                    </div>
+                    <div class="layer-container" id="wednesday-div-sm">
+                      <input class="form-check-input" type="checkbox" value="wednesday" id="wednesday-sm"
+                        layer-code="2-sm" layer-number="1-sm" onchange="this.checked" checked>
+                      <label class="form-check-label" for="wednesday-sm">水曜日</label>
+                    </div>
+                    <div class="layer-container" id="thursday-div-sm">
+                      <input class="form-check-input" type="checkbox" value="thursday" id="thursday-sm"
+                        layer-code="2-sm" layer-number="1-sm" onchange="this.checked" checked>
+                      <label class="form-check-label" for="thursday-sm">木曜日</label>
+                    </div>
+                    <div class="layer-container" id="friday-div-sm">
+                      <input class="form-check-input" type="checkbox" value="friday" id="friday-sm" layer-code="2-sm"
+                        layer-number="1-sm" onchange="this.checked" checked>
+                      <label class="form-check-label" for="friday-sm">金曜日</label>
+                    </div>
+                    <div class="layer-container" id="saturday-div-sm">
+                      <input class="form-check-input" type="checkbox" value="saturday" id="saturday-sm"
+                        layer-code="2-sm" layer-number="1-sm" onchange="this.checked" checked>
+                      <label class="form-check-label" for="saturday-sm">土曜日</label>
+                    </div>
+                    <div class="layer-container" id="sunday-div-sm">
+                      <input class="form-check-input" type="checkbox" value="sunday" id="sunday-sm" layer-code="2-sm"
+                        layer-number="1-sm" onchange="this.checked" checked>
+                      <label class="form-check-label" for="sunday-sm">日曜日</label>
+                    </div>
+                    <div class="form-check-sub">
+                    </div>
+                  </div>
+
+                </div>
+
+                <div class="layer3 p-2 border-bottom border-light-subtle">
+
+                  <div class="layer-header">
+                    <div class="layer-title">
+                      <span>時間帯</span>
+                    </div>
+                    <div class="layer-button-sm">
+                      <button type="button" class="btn btn-outline-secondary btn-sm" data-action="clear"
+                        value="2-sm">クリア</button>
+                    </div>
+                    <div class="layer-button-sm">
+                      <button type="button" class="btn btn-secondary btn-sm" data-action="select"
+                        value="2-sm">すべて選ぶ</button>
+                    </div>
+                  </div>
+
+                  <div class="d-flex flex-wrap">
+                    <div class="layer-container" id="tc_ac_time1-div-sm">
+                      <input class="form-check-input" type="checkbox" value="tc_ac_time1" id="tc_ac_time1-sm"
+                        layer-code="2-sm" layer-number="2-sm" onchange="this.checked" checked>
+                      <label class="form-check-label" for="tc_ac_time1-sm">朝 5~10時</label>
+                    </div>
+                    <div class="layer-container" id="tc_ac_time2-div-sm">
+                      <input class="form-check-input" type="checkbox" value="tc_ac_time2" id="tc_ac_time2-sm"
+                        layer-code="2-sm" layer-number="2-sm" onchange="this.checked" checked>
+                      <label class="form-check-label" for="tc_ac_time2-sm">昼 11~15時</label>
+                    </div>
+                    <div class="layer-container" id="tc_ac_time3-div-sm">
+                      <input class="form-check-input" type="checkbox" value="tc_ac_time3" id="tc_ac_time3-sm"
+                        layer-code="2-sm" layer-number="2-sm" onchange="this.checked" checked>
+                      <label class="form-check-label" for="tc_ac_time3-sm">夕 16~18時</label>
+                    </div>
+                    <div class="layer-container" id="tc_ac_time4-div-sm">
+                      <input class="form-check-input" type="checkbox" value="tc_ac_time4" id="tc_ac_time4-sm"
+                        layer-code="2-sm" layer-number="2-sm" onchange="this.checked" checked>
+                      <label class="form-check-label" for="tc_ac_time4-sm">夜 19~4時</label>
+                    </div>
+                  </div>
+
+                </div>
+
+                <div class="layer4 p-2 border-bottom border-light-subtle">
+
+                  <div class="layer-header">
+                    <div class="layer-title">
+                      <span>年齢</span>
+                    </div>
+                    <div class="layer-button-sm">
+                      <button type="button" class="btn btn-outline-secondary btn-sm" data-action="clear"
+                        value="3-sm">クリア</button>
+                    </div>
+                    <div class="layer-button-sm">
+                      <button type="button" class="btn btn-secondary btn-sm" data-action="select"
+                        value="3-sm">すべて選ぶ</button>
+                    </div>
+                  </div>
+
+                  <div class="d-flex flex-wrap">
+                    <div class="layer-container" id="age1-div-sm">
+                      <input class="form-check-input" type="checkbox" value="age1" id="age1-sm" layer-code="2-sm"
+                        layer-number="3-sm" onchange="this.checked" checked>
+                      <label class="form-check-label" for="age1-sm">0~24歳</label>
+                    </div>
+                    <div class="layer-container" id="age2-div-sm">
+                      <input class="form-check-input" type="checkbox" value="age2" id="age2-sm" layer-code="2-sm"
+                        layer-number="3-sm" onchange="this.checked" checked>
+                      <label class="form-check-label" for="age2-sm">25~34歳</label>
+                    </div>
+                    <div class="layer-container" id="age3-div-sm">
+                      <input class="form-check-input" type="checkbox" value="age3" id="age3-sm" layer-code="2-sm"
+                        layer-number="3-sm" onchange="this.checked" checked>
+                      <label class="form-check-label" for="age3-sm">35~44歳</label>
+                    </div>
+                    <div class="layer-container" id="age4-div-sm">
+                      <input class="form-check-input" type="checkbox" value="age4" id="age4-sm" layer-code="2-sm"
+                        layer-number="3-sm" onchange="this.checked" checked>
+                      <label class="form-check-label" for="age4-sm">45~54歳</label>
+                    </div>
+                    <div class="layer-container" id="age5-div-sm">
+                      <input class="form-check-input" type="checkbox" value="age5" id="age5-sm" layer-code="2-sm"
+                        layer-number="3-sm" onchange="this.checked" checked>
+                      <label class="form-check-label" for="age5-sm">55~64歳</label>
+                    </div>
+                    <div class="layer-container" id="age6-div-sm">
+                      <input class="form-check-input" type="checkbox" value="age6" id="age6-sm" layer-code="2-sm"
+                        layer-number="3-sm" onchange="this.checked" checked>
+                      <label class="form-check-label" for="age6-sm">65~74歳</label>
+                    </div>
+                    <div class="layer-container" id="age7-div-sm">
+                      <input class="form-check-input" type="checkbox" value="age7" id="age7-sm" layer-code="2-sm"
+                        layer-number="3-sm" onchange="this.checked" checked>
+                      <label class="form-check-label" for="age7-sm">75歳以上</label>
+                    </div>
+                    <div class="layer-container" id="age8-div-sm">
+                      <input class="form-check-input" type="checkbox" value="age8" id="age8-sm" layer-code="2-sm"
+                        layer-number="3-sm" onchange="this.checked" checked>
+                      <label class="form-check-label" for="age8-sm">不明</label>
+                    </div>
+                  </div>
+
+                </div>
+
+                <div class="layer5 p-2 border-bottom border-light-subtle">
+
+                  <div class="layer-header">
+                    <div class="layer-title">
+                      <span>信号</span>
+                    </div>
+                    <div class="layer-button-sm">
+                      <button type="button" class="btn btn-outline-secondary btn-sm" data-action="clear"
+                        value="4-sm">クリア</button>
+                    </div>
+                    <div class="layer-button-sm">
+                      <button type="button" class="btn btn-secondary btn-sm" data-action="select"
+                        value="4-sm">すべて選ぶ</button>
+                    </div>
+                  </div>
+
+                  <div class="d-flex flex-wrap">
+                    <div class="layer-container" id="tc_light1-div-sm">
+                      <input class="form-check-input" type="checkbox" value="tc_light1" id="tc_light1-sm"
+                        layer-code="2-sm" layer-number="4-sm" onchange="this.checked" checked>
+                      <label class="form-check-label" for="tc_light1-sm">信号あり</label>
+                    </div>
+                    <div class="layer-container" id="tc_light2-div-sm">
+                      <input class="form-check-input" type="checkbox" value="tc_light2" id="tc_light2-sm"
+                        layer-code="2-sm" layer-number="4-sm" onchange="this.checked" checked>
+                      <label class="form-check-label" for="tc_light2-sm">信号なし</label>
+                    </div>
+                  </div>
+
+                </div>
+
+                <div class="layer6 p-2 border-bottom border-light-subtle">
+
+                  <div class="layer-header">
+                    <div class="layer-title">
+                      <span>天候</span>
+                    </div>
+                    <div class="layer-button-sm">
+                      <button type="button" class="btn btn-outline-secondary btn-sm" data-action="clear"
+                        value="5-sm">クリア</button>
+                    </div>
+                    <div class="layer-button-sm">
+                      <button type="button" class="btn btn-secondary btn-sm" data-action="select"
+                        value="5-sm">すべて選ぶ</button>
+                    </div>
+                  </div>
+
+                  <div class="d-flex flex-wrap">
+                    <div class="layer-container" id="weather1-div-sm">
+                      <input class="form-check-input" type="checkbox" value="weather1" id="weather1-sm"
+                        layer-code="2-sm" layer-number="5-sm" onchange="this.checked" checked>
+                      <label class="form-check-label" for="weather1-sm">晴れ</label>
+                    </div>
+                    <div class="layer-container" id="weather2-div-sm">
+                      <input class="form-check-input" type="checkbox" value="weather2" id="weather2-sm"
+                        layer-code="2-sm" layer-number="5-sm" onchange="this.checked" checked>
+                      <label class="form-check-label" for="weather2-sm">曇り</label>
+                    </div>
+                    <div class="layer-container" id="weather3-div-sm">
+                      <input class="form-check-input" type="checkbox" value="weather3" id="weather3-sm"
+                        layer-code="2-sm" layer-number="5-sm" onchange="this.checked" checked>
+                      <label class="form-check-label" for="weather3-sm">雨</label>
+                    </div>
+                    <div class="layer-container" id="weather4-div-sm">
+                      <input class="form-check-input" type="checkbox" value="weather4" id="weather4-sm"
+                        layer-code="2-sm" layer-number="5-sm" onchange="this.checked" checked>
+                      <label class="form-check-label" for="weather4-sm">霧</label>
+                    </div>
+                    <div class="layer-container" id="weather5-div-sm">
+                      <input class="form-check-input" type="checkbox" value="weather5" id="weather5-sm"
+                        layer-code="2-sm" layer-number="5-sm" onchange="this.checked" checked>
+                      <label class="form-check-label" for="weather5-sm">雪</label>
+                    </div>
+                    <div class="form-check-sub">
+                    </div>
+                  </div>
+
+                </div>
+
+                <div class="layer7 p-2 border-bottom border-light-subtle">
+
+                  <div class="layer-header">
+                    <div class="layer-title">
+                      <span>道路形状</span>
+                    </div>
+                    <div class="layer-button-sm">
+                      <button type="button" class="btn btn-outline-secondary btn-sm" data-action="clear"
+                        value="6-sm">クリア</button>
+                    </div>
+                    <div class="layer-button-sm">
+                      <button type="button" class="btn btn-secondary btn-sm" data-action="select"
+                        value="6-sm">すべて選ぶ</button>
+                    </div>
+                  </div>
+
+                  <div class="d-flex flex-wrap">
+                    <div class="layer-container" id="road_shape1-div-sm">
+                      <input class="form-check-input" type="checkbox" value="road_shape1" id="road_shape1-sm"
+                        layer-code="2-sm" layer-number="6-sm" onchange="this.checked" checked>
+                      <label class="form-check-label" for="road_shape1-sm">交差点</label>
+                    </div>
+                    <div class="layer-container" id="road_shape2-div-sm">
+                      <input class="form-check-input" type="checkbox" value="road_shape2" id="road_shape2-sm"
+                        layer-code="2-sm" layer-number="6-sm" onchange="this.checked" checked>
+                      <label class="form-check-label" for="road_shape2-sm">単路</label>
+                    </div>
+                    <div class="layer-container" id="road_shape3-div-sm">
+                      <input class="form-check-input" type="checkbox" value="road_shape3" id="road_shape3-sm"
+                        layer-code="2-sm" layer-number="6-sm" onchange="this.checked" checked>
+                      <label class="form-check-label" for="road_shape3-sm">踏切</label>
+                    </div>
+                    <div class="layer-container" id="road_shape4-div-sm">
+                      <input class="form-check-input" type="checkbox" value="road_shape4" id="road_shape4-sm"
+                        layer-code="2-sm" layer-number="6-sm" onchange="this.checked" checked>
+                      <label class="form-check-label" for="road_shape4-sm">一般交通</label>
+                    </div>
+                  </div>
+
+                </div>
+
+                <div class="layer8 p-2 border-bottom border-light-subtle">
+
+                  <div class="layer-header">
+                    <div class="layer-title">
+                      <span>事故類型</span>
+                    </div>
+                    <div class="layer-button-sm">
+                      <button type="button" class="btn btn-outline-secondary btn-sm" data-action="clear"
+                        value="7-sm">クリア</button>
+                    </div>
+                    <div class="layer-button-sm">
+                      <button type="button" class="btn btn-secondary btn-sm" data-action="select"
+                        value="7-sm">すべて選ぶ</button>
+                    </div>
+                  </div>
+
+                  <div class="d-flex flex-wrap">
+                    <div class="layer-container" id="accident_type1-div-sm">
+                      <input class="form-check-input" type="checkbox" value="accident_type1" id="accident_type1-sm"
+                        layer-code="2-sm" layer-number="7-sm" onchange="this.checked" checked>
+                      <label class="form-check-label" for="accident_type1-sm">人対車両</label>
+                    </div>
+                    <div class="layer-container" id="accident_type2-div-sm">
+                      <input class="form-check-input" type="checkbox" value="accident_type2" id="accident_type2-sm"
+                        layer-code="2-sm" layer-number="7-sm" onchange="this.checked" checked>
+                      <label class="form-check-label" for="accident_type2-sm">車両相互</label>
+                    </div>
+                    <div class="layer-container" id="accident_type3-div-sm">
+                      <input class="form-check-input" type="checkbox" value="accident_type3" id="accident_type3-sm"
+                        layer-code="2-sm" layer-number="7-sm" onchange="this.checked" checked>
+                      <label class="form-check-label" for="accident_type3-sm">車両単独</label>
+                    </div>
+                    <div class="layer-container" id="accident_type4-div-sm">
+                      <input class="form-check-input" type="checkbox" value="accident_type4" id="accident_type4-sm"
+                        layer-code="2-sm" layer-number="7-sm" onchange="this.checked" checked>
+                      <label class="form-check-label" for="accident_type4-sm">列車</label>
+                    </div>
+                  </div>
+
+                </div>
+
+                <div class="layer9 p-2 border-bottom border-light-subtle">
+
+                  <div class="layer-header">
+                    <div class="layer-title">
+                      <span>歩道等</span>
+                    </div>
+                    <div class="layer-button-sm">
+                      <button type="button" class="btn btn-outline-secondary btn-sm" data-action="clear"
+                        value="8-sm">クリア</button>
+                    </div>
+                    <div class="layer-button-sm">
+                      <button type="button" class="btn btn-secondary btn-sm" data-action="select"
+                        value="8-sm">すべて選ぶ</button>
+                    </div>
+                  </div>
+                  <div class="d-flex flex-wrap">
+                    <div class="layer-container" id="sidewalk_road_division1-div-sm">
+                      <input class="form-check-input" type="checkbox" value="sidewalk_road_division1"
+                        id="sidewalk_road_division1-sm" layer-code="2-sm" layer-number="8-sm" onchange="this.checked"
+                        checked>
+                      <label class="form-check-label" for="sidewalk_road_division1-sm">防護柵</label>
+                    </div>
+                    <div class="layer-container" id="sidewalk_road_division2-div-sm">
+                      <input class="form-check-input" type="checkbox" value="sidewalk_road_division2"
+                        id="sidewalk_road_division2-sm" layer-code="2-sm" layer-number="8-sm" onchange="this.checked"
+                        checked>
+                      <label class="form-check-label" for="sidewalk_road_division2-sm">縁石・ブロック</label>
+                    </div>
+                    <div class="layer-container" id="sidewalk_road_division3-div-sm">
+                      <input class="form-check-input" type="checkbox" value="sidewalk_road_division3"
+                        id="sidewalk_road_division3-sm" layer-code="2-sm" layer-number="8-sm" onchange="this.checked"
+                        checked>
+                      <label class="form-check-label" for="sidewalk_road_division3-sm">路側帯</label>
+                    </div>
+                    <div class="layer-container" id="sidewalk_road_division4-div-sm">
+                      <input class="form-check-input" type="checkbox" value="sidewalk_road_division4"
+                        id="sidewalk_road_division4-sm" layer-code="2-sm" layer-number="8-sm" onchange="this.checked"
+                        checked>
+                      <label class="form-check-label" for="sidewalk_road_division4-sm">歩道なし</label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="footer p-2 pe-3 pt-3 border-bottom border-light-subtle" style="font-size: 12px;">
+                  ※1 : コメントはマーカーから10メートル以内のものをまとめて表示しています。<br /><br />
+                  ※2 : スマホやタブレットでは色のついた地点を押すと、パソコンではカーソルをクリックすると、事故の詳細が表示されます。<br /><br />
+                  ・ 交通事故データ<br />
+                  <a
+                    href="https://www.npa.go.jp/publications/statistics/koutsuu/opendata/index_opendata.html">「交通事故統計情報のオープンデータ」</a><br /><br />
+                </div>
+
+
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+    </nav>
+
+  </header>
+
+  <main>
+    <div class="container-main">
+
+      <div class="container-left">
+        <!-- 左側のスクロール可能なカラム -->
+        <div class="header-left-container">
+          <div style="margin-top: 10px; margin-left: 10px;">
+            <h6>表示条件を絞り込む</h6>
+          </div>
+          <div class="layer0 p-2 pe-3 pt-3 border-bottom border-light-subtle">
+            <div class="layer-header">
+              <div class="layer-title">
+                <span>発生年</span>
+              </div>
+              <div class="layer-button">
+                <button type="button" class="btn btn-outline-secondary btn-sm" data-action="clear"
+                  value="10">クリア</button>
+              </div>
+              <div class="layer-button">
+                <button type="button" class="btn btn-secondary btn-sm" data-action="select" value="10">すべて選ぶ</button>
+              </div>
+            </div>
+
+            <div class="d-flex flex-wrap">
+              <div class="layer-container" id="2019-div">
+                <input class="form-check-input" type="checkbox" value="2019" id="2019" layer-code="1" layer-number="10"
+                  onchange="this.checked" checked>
+                <label class="form-check-label" for="2019">2019年</label>
+              </div>
+              <div class="layer-container" id="2020-div">
+                <input class="form-check-input" type="checkbox" value="2020" id="2020" layer-code="1" layer-number="10"
+                  onchange="this.checked" checked>
+                <label class="form-check-label" for="2020">2020年</label>
+              </div>
+              <div class="layer-container" id="2021-div">
+                <input class="form-check-input" type="checkbox" value="2021" id="2021" layer-code="1" layer-number="10"
+                  onchange="this.checked" checked>
+                <label class="form-check-label" for="2021">2021年</label>
+              </div>
+              <div class="layer-container" id="2022-div">
+                <input class="form-check-input" type="checkbox" value="2022" id="2022" layer-code="1" layer-number="10"
+                  onchange="this.checked" checked>
+                <label class="form-check-label" for="2022">2022年</label>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="btn-container">
+            <div class="btn-map-clear">
+              <button type="button" class="btn btn-outline-dark btn-sm" id="map-clear">地図をクリア</button>
+            </div>
+            <div class="btn-map-show">
+              <button type="button" class="btn btn-dark btn-sm" id="show-button">表示する</button>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="scroll-content" id="layer-control">
+
+          <div class="layer1 p-2 border-bottom border-light-subtle">
+
+            <div class="layer-header">
+              <div class="layer-title">
+                <span>事故内容</span>
+              </div>
+              <div class="layer-button">
+                <button type="button" class="btn btn-outline-secondary btn-sm" data-action="clear"
+                  value="0">クリア</button>
+              </div>
+              <div class="layer-button">
+                <button type="button" class="btn btn-secondary btn-sm" data-action="select" value="0">すべて選ぶ</button>
+              </div>
+            </div>
+
+            <div class="d-flex flex-wrap">
+              <div class="layer-container" id="accident_detail1-div">
+                <input class="form-check-input" type="checkbox" value="accident_detail1" id="accident_detail1"
+                  layer-code="2" layer-number="0" onchange="this.checked" checked>
+                <label class="form-check-label" for="accident_detail1">死亡事故</label>
+              </div>
+              <div class="layer-container" id="accident_detail2-div">
+                <input class="form-check-input" type="checkbox" value="accident_detail2" id="accident_detail2"
+                  layer-code="2" layer-number="0" onchange="this.checked" checked>
+                <label class="form-check-label" for="accident_detail2">負傷事故</label>
+              </div>
+              <div class="layer-container" id="accident_detail3-div">
+                <input class="form-check-input" type="checkbox" value="accident_detail3" id="accident_detail3"
+                  layer-code="2" layer-number="0" onchange="this.checked" checked>
+                <label class="form-check-label" for="accident_detail3">損傷なし事故</label>
+              </div>
+              <div class="form-check-sub">
+              </div>
+            </div>
+
+          </div>
+
+          <div class="layer2 p-2 pe-3 pt-3 border-bottom border-light-subtle">
+
+            <div class="layer-header">
+              <div class="layer-title">
+                <span>曜日</span>
+              </div>
+              <div class="layer-button">
+                <button type="button" class="btn btn-outline-secondary btn-sm" data-action="clear"
+                  value="1">クリア</button>
+              </div>
+              <div class="layer-button">
+                <button type="button" class="btn btn-secondary btn-sm" data-action="select" value="1">すべて選ぶ</button>
+              </div>
+            </div>
+
+            <div class="d-flex flex-wrap">
+              <div class="layer-container" id="monday-div">
+                <input class="form-check-input" type="checkbox" value="monday" id="monday" layer-code="2"
+                  layer-number="1" onchange="this.checked" checked>
+                <label class="form-check-label" for="monday">月曜日</label>
+              </div>
+              <div class="layer-container" id="tuesday-div">
+                <input class="form-check-input" type="checkbox" value="tuesday" id="tuesday" layer-code="2"
+                  layer-number="1" onchange="this.checked" checked>
+                <label class="form-check-label" for="tuesday">火曜日</label>
+              </div>
+              <div class="layer-container" id="wednesday-div">
+                <input class="form-check-input" type="checkbox" value="wednesday" id="wednesday" layer-code="2"
+                  layer-number="1" onchange="this.checked" checked>
+                <label class="form-check-label" for="wednesday">水曜日</label>
+              </div>
+              <div class="layer-container" id="thursday-div">
+                <input class="form-check-input" type="checkbox" value="thursday" id="thursday" layer-code="2"
+                  layer-number="1" onchange="this.checked" checked>
+                <label class="form-check-label" for="thursday">木曜日</label>
+              </div>
+              <div class="layer-container" id="friday-div">
+                <input class="form-check-input" type="checkbox" value="friday" id="friday" layer-code="2"
+                  layer-number="1" onchange="this.checked" checked>
+                <label class="form-check-label" for="friday">金曜日</label>
+              </div>
+              <div class="layer-container" id="saturday-div">
+                <input class="form-check-input" type="checkbox" value="saturday" id="saturday" layer-code="2"
+                  layer-number="1" onchange="this.checked" checked>
+                <label class="form-check-label" for="saturday">土曜日</label>
+              </div>
+              <div class="layer-container" id="sunday-div">
+                <input class="form-check-input" type="checkbox" value="sunday" id="sunday" layer-code="2"
+                  layer-number="1" onchange="this.checked" checked>
+                <label class="form-check-label" for="sunday">日曜日</label>
+              </div>
+              <div class="form-check-sub">
+              </div>
+            </div>
+
+          </div>
+
+          <div class="layer3 p-2 pe-3 pt-3 border-bottom border-light-subtle">
+
+            <div class="layer-header">
+              <div class="layer-title">
+                <span>時間帯</span>
+              </div>
+              <div class="layer-button">
+                <button type="button" class="btn btn-outline-secondary btn-sm" data-action="clear"
+                  value="2">クリア</button>
+              </div>
+              <div class="layer-button">
+                <button type="button" class="btn btn-secondary btn-sm" data-action="select" value="2">すべて選ぶ</button>
+              </div>
+            </div>
+
+            <div class="d-flex flex-wrap">
+              <div class="layer-container" id="tc_ac_time1-div">
+                <input class="form-check-input" type="checkbox" value="tc_ac_time1" id="tc_ac_time1" layer-code="2"
+                  layer-number="2" onchange="this.checked" checked>
+                <label class="form-check-label" for="tc_ac_time1">朝 5~10時</label>
+              </div>
+              <div class="layer-container" id="tc_ac_time2-div">
+                <input class="form-check-input" type="checkbox" value="tc_ac_time2" id="tc_ac_time2" layer-code="2"
+                  layer-number="2" onchange="this.checked" checked>
+                <label class="form-check-label" for="tc_ac_time2">昼 11~15時</label>
+              </div>
+              <div class="layer-container" id="tc_ac_time3-div">
+                <input class="form-check-input" type="checkbox" value="tc_ac_time3" id="tc_ac_time3" layer-code="2"
+                  layer-number="2" onchange="this.checked" checked>
+                <label class="form-check-label" for="tc_ac_time3">夕 16~18時</label>
+              </div>
+              <div class="layer-container" id="tc_ac_time4-div">
+                <input class="form-check-input" type="checkbox" value="tc_ac_time4" id="tc_ac_time4" layer-code="2"
+                  layer-number="2" onchange="this.checked" checked>
+                <label class="form-check-label" for="tc_ac_time4">夜 19~4時</label>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="layer4 p-2 pe-3 pt-3 border-bottom border-light-subtle">
+
+            <div class="layer-header">
+              <div class="layer-title">
+                <span>年齢</span>
+              </div>
+              <div class="layer-button">
+                <button type="button" class="btn btn-outline-secondary btn-sm" data-action="clear"
+                  value="3">クリア</button>
+              </div>
+              <div class="layer-button">
+                <button type="button" class="btn btn-secondary btn-sm" data-action="select" value="3">すべて選ぶ</button>
+              </div>
+            </div>
+
+            <div class="d-flex flex-wrap">
+              <div class="layer-container" id="age1-div">
+                <input class="form-check-input" type="checkbox" value="age1" id="age1" layer-code="2" layer-number="3"
+                  onchange="this.checked" checked>
+                <label class="form-check-label" for="age1">0~24歳</label>
+              </div>
+              <div class="layer-container" id="age2-div">
+                <input class="form-check-input" type="checkbox" value="age2" id="age2" layer-code="2" layer-number="3"
+                  onchange="this.checked" checked>
+                <label class="form-check-label" for="age2">25~34歳</label>
+              </div>
+              <div class="layer-container" id="age3-div">
+                <input class="form-check-input" type="checkbox" value="age3" id="age3" layer-code="2" layer-number="3"
+                  onchange="this.checked" checked>
+                <label class="form-check-label" for="age3">35~44歳</label>
+              </div>
+              <div class="layer-container" id="age4-div">
+                <input class="form-check-input" type="checkbox" value="age4" id="age4" layer-code="2" layer-number="3"
+                  onchange="this.checked" checked>
+                <label class="form-check-label" for="age4">45~54歳</label>
+              </div>
+              <div class="layer-container" id="age5-div">
+                <input class="form-check-input" type="checkbox" value="age5" id="age5" layer-code="2" layer-number="3"
+                  onchange="this.checked" checked>
+                <label class="form-check-label" for="age5">55~64歳</label>
+              </div>
+              <div class="layer-container" id="age6-div">
+                <input class="form-check-input" type="checkbox" value="age6" id="age6" layer-code="2" layer-number="3"
+                  onchange="this.checked" checked>
+                <label class="form-check-label" for="age6">65~74歳</label>
+              </div>
+              <div class="layer-container" id="age7-div">
+                <input class="form-check-input" type="checkbox" value="age7" id="age7" layer-code="2" layer-number="3"
+                  onchange="this.checked" checked>
+                <label class="form-check-label" for="age7">75歳以上</label>
+              </div>
+              <div class="layer-container" id="age8-div">
+                <input class="form-check-input" type="checkbox" value="age8" id="age8" layer-code="2" layer-number="3"
+                  onchange="this.checked" checked>
+                <label class="form-check-label" for="age8">不明</label>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="layer5 p-2 pe-3 pt-3 border-bottom border-light-subtle">
+
+            <div class="layer-header">
+              <div class="layer-title">
+                <span>信号</span>
+              </div>
+              <div class="layer-button">
+                <button type="button" class="btn btn-outline-secondary btn-sm" data-action="clear"
+                  value="4">クリア</button>
+              </div>
+              <div class="layer-button">
+                <button type="button" class="btn btn-secondary btn-sm" data-action="select" value="4">すべて選ぶ</button>
+              </div>
+            </div>
+
+            <div class="d-flex flex-wrap">
+              <div class="layer-container" id="tc_light1-div">
+                <input class="form-check-input" type="checkbox" value="tc_light1" id="tc_light1" layer-code="2"
+                  layer-number="4" onchange="this.checked" checked>
+                <label class="form-check-label" for="tc_light1">信号あり</label>
+              </div>
+              <div class="layer-container" id="tc_light2-div">
+                <input class="form-check-input" type="checkbox" value="tc_light2" id="tc_light2" layer-code="2"
+                  layer-number="4" onchange="this.checked" checked>
+                <label class="form-check-label" for="tc_light2">信号なし</label>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="layer6 p-2 pe-3 pt-3 border-bottom border-light-subtle">
+
+            <div class="layer-header">
+              <div class="layer-title">
+                <span>天候</span>
+              </div>
+              <div class="layer-button">
+                <button type="button" class="btn btn-outline-secondary btn-sm" data-action="clear"
+                  value="5">クリア</button>
+              </div>
+              <div class="layer-button">
+                <button type="button" class="btn btn-secondary btn-sm" data-action="select" value="5">すべて選ぶ</button>
+              </div>
+            </div>
+
+            <div class="d-flex flex-wrap">
+              <div class="layer-container" id="weather1-div">
+                <input class="form-check-input" type="checkbox" value="weather1" id="weather1" layer-code="2"
+                  layer-number="5" onchange="this.checked" checked>
+                <label class="form-check-label" for="weather1">晴れ</label>
+              </div>
+              <div class="layer-container" id="weather2-div">
+                <input class="form-check-input" type="checkbox" value="weather2" id="weather2" layer-code="2"
+                  layer-number="5" onchange="this.checked" checked>
+                <label class="form-check-label" for="weather2">曇り</label>
+              </div>
+              <div class="layer-container" id="weather3-div">
+                <input class="form-check-input" type="checkbox" value="weather3" id="weather3" layer-code="2"
+                  layer-number="5" onchange="this.checked" checked>
+                <label class="form-check-label" for="weather3">雨</label>
+              </div>
+              <div class="layer-container" id="weather4-div">
+                <input class="form-check-input" type="checkbox" value="weather4" id="weather4" layer-code="2"
+                  layer-number="5" onchange="this.checked" checked>
+                <label class="form-check-label" for="weather4">霧</label>
+              </div>
+              <div class="layer-container" id="weather5-div">
+                <input class="form-check-input" type="checkbox" value="weather5" id="weather5" layer-code="2"
+                  layer-number="5" onchange="this.checked" checked>
+                <label class="form-check-label" for="weather5">雪</label>
+              </div>
+              <div class="form-check-sub">
+              </div>
+            </div>
+
+          </div>
+
+          <div class="layer7 p-2 pe-3 pt-3 border-bottom border-light-subtle">
+
+            <div class="layer-header">
+              <div class="layer-title">
+                <span>道路形状</span>
+              </div>
+              <div class="layer-button">
+                <button type="button" class="btn btn-outline-secondary btn-sm" data-action="clear"
+                  value="6">クリア</button>
+              </div>
+              <div class="layer-button">
+                <button type="button" class="btn btn-secondary btn-sm" data-action="select" value="6">すべて選ぶ</button>
+              </div>
+            </div>
+
+            <div class="d-flex flex-wrap">
+              <div class="layer-container" id="road_shape1-div">
+                <input class="form-check-input" type="checkbox" value="road_shape1" id="road_shape1" layer-code="2"
+                  layer-number="6" onchange="this.checked" checked>
+                <label class="form-check-label" for="road_shape1">交差点</label>
+              </div>
+              <div class="layer-container" id="road_shape2-div">
+                <input class="form-check-input" type="checkbox" value="road_shape2" id="road_shape2" layer-code="2"
+                  layer-number="6" onchange="this.checked" checked>
+                <label class="form-check-label" for="road_shape2">単路</label>
+              </div>
+              <div class="layer-container" id="road_shape3-div">
+                <input class="form-check-input" type="checkbox" value="road_shape3" id="road_shape3" layer-code="2"
+                  layer-number="6" onchange="this.checked" checked>
+                <label class="form-check-label" for="road_shape3">踏切</label>
+              </div>
+              <div class="layer-container" id="road_shape4-div">
+                <input class="form-check-input" type="checkbox" value="road_shape4" id="road_shape4" layer-code="2"
+                  layer-number="6" onchange="this.checked" checked>
+                <label class="form-check-label" for="road_shape4">一般交通</label>
+              </div>
+            </div>
+
+          </div>
+
+
+          <div class="layer8 p-2 pe-3 pt-3 border-bottom border-light-subtle">
+
+            <div class="layer-header">
+              <div class="layer-title">
+                <span>事故類型</span>
+              </div>
+              <div class="layer-button">
+                <button type="button" class="btn btn-outline-secondary btn-sm" data-action="clear"
+                  value="7">クリア</button>
+              </div>
+              <div class="layer-button">
+                <button type="button" class="btn btn-secondary btn-sm" data-action="select" value="7">すべて選ぶ</button>
+              </div>
+            </div>
+
+            <div class="d-flex flex-wrap">
+              <div class="layer-container" id="accident_type1-div">
+                <input class="form-check-input" type="checkbox" value="accident_type1" id="accident_type1"
+                  layer-code="2" layer-number="7" onchange="this.checked" checked>
+                <label class="form-check-label" for="accident_type1">人対車両</label>
+              </div>
+              <div class="layer-container" id="accident_type2-div">
+                <input class="form-check-input" type="checkbox" value="accident_type2" id="accident_type2"
+                  layer-code="2" layer-number="7" onchange="this.checked" checked>
+                <label class="form-check-label" for="accident_type2">車両相互</label>
+              </div>
+              <div class="layer-container" id="accident_type3-div">
+                <input class="form-check-input" type="checkbox" value="accident_type3" id="accident_type3"
+                  layer-code="2" layer-number="7" onchange="this.checked" checked>
+                <label class="form-check-label" for="accident_type3">車両単独</label>
+              </div>
+              <div class="layer-container" id="accident_type4-div">
+                <input class="form-check-input" type="checkbox" value="accident_type4" id="accident_type4"
+                  layer-code="2" layer-number="7" onchange="this.checked" checked>
+                <label class="form-check-label" for="accident_type4">列車</label>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="layer9 p-2 pe-3 pt-3 border-bottom border-light-subtle">
+
+            <div class="layer-header">
+              <div class="layer-title">
+                <span>歩道等</span>
+              </div>
+              <div class="layer-button">
+                <button type="button" class="btn btn-outline-secondary btn-sm" data-action="clear"
+                  value="8">クリア</button>
+              </div>
+              <div class="layer-button">
+                <button type="button" class="btn btn-secondary btn-sm" data-action="select" value="8">すべて選ぶ</button>
+              </div>
+            </div>
+
+            <div class="d-flex flex-wrap">
+              <div class="layer-container" id="sidewalk_road_division1-div">
+                <input class="form-check-input" type="checkbox" value="sidewalk_road_division1"
+                  id="sidewalk_road_division1" layer-code="2" layer-number="8" onchange="this.checked" checked>
+                <label class="form-check-label" for="sidewalk_road_division1">防護柵</label>
+              </div>
+              <div class="layer-container" id="sidewalk_road_division2-div">
+                <input class="form-check-input" type="checkbox" value="sidewalk_road_division2"
+                  id="sidewalk_road_division2" layer-code="2" layer-number="8" onchange="this.checked" checked>
+                <label class="form-check-label" for="sidewalk_road_division2">縁石・ブロック</label>
+              </div>
+              <div class="layer-container" id="sidewalk_road_division3-div">
+                <input class="form-check-input" type="checkbox" value="sidewalk_road_division3"
+                  id="sidewalk_road_division3" layer-code="2" layer-number="8" onchange="this.checked" checked>
+                <label class="form-check-label" for="sidewalk_road_division3">路側帯</label>
+              </div>
+              <div class="layer-container" id="sidewalk_road_division4-div">
+                <input class="form-check-input" type="checkbox" value="sidewalk_road_division4"
+                  id="sidewalk_road_division4" layer-code="2" layer-number="8" onchange="this.checked" checked>
+                <label class="form-check-label" for="sidewalk_road_division4">歩道なし</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="footer p-2 pe-3 pt-3 border-bottom border-light-subtle" style="font-size: 12px;">
+            ※1 : コメントはマーカーから10メートル以内のものをまとめて表示しています。<br /><br />
+            ※2 : スマホやタブレットでは色のついた地点を押すと、パソコンではカーソルをクリックすると、事故の詳細が表示されます。<br /><br />
+            ・ 交通事故データ (2019年 ~ 2022年)<br />
+            <a
+              href="https://www.npa.go.jp/publications/statistics/koutsuu/opendata/index_opendata.html">「交通事故統計情報のオープンデータ」</a><br /><br />
+          </div>
+
+        </div>
+      </div>
+
+      <!-- 右側の固定されたカラム -->
+      <div class="container-right" id="map">
+        <script src="./index.js"></script>
+      </div>
+    </div>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+    crossorigin="anonymous"></script>
+</body>
+</body>
+
+</html>

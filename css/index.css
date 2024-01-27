@@ -1,0 +1,653 @@
+@import url(//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css);
+
+/* パソコン用 */
+@media (min-width: 992px) {
+  #errorModal-sm {
+    display: none;
+  }
+
+  /* * {
+    outline: 2px solid blue;
+  } */
+  html {
+    overflow-x: hidden;
+    margin: 0px;
+    height: 100%;
+    width: 100%;
+  }
+
+  body {
+    overflow-x: clip;
+    padding-top: 56px;
+    padding-bottom: 0px;
+    margin: 0px;
+    height: 100%;
+    width: 100%;
+  }
+
+  header {
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 10;
+  }
+
+  main {
+    margin: 0px;
+    height: 100%;
+    width: 100%;
+  }
+
+  #sm-nav {
+    display: none;
+  }
+
+  #sm-layer {
+    display: none;
+  }
+
+  /* コンテナ全体 */
+  .container-main {
+    display: flex;
+    /* height: 93.9svh; */
+    height: 100%;
+    width: 100%;
+  }
+
+  /* 左側 */
+  .container-left {
+    padding-left: 10px;
+    min-width: 280px;
+    max-width: 300px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    /* 子要素を縦に配置 */
+  }
+
+  .header-left-container {
+    width: 100%;
+    height: auto;
+    margin: 0px;
+  }
+
+  .scroll-content {
+    width: 100%;
+    height: auto;
+    margin: 0px;
+    overflow-y: auto;
+  }
+
+  /* 右側 map */
+  .container-right {
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+  }
+
+  /* 左側レイヤー */
+  .btn-container {
+    padding: 10px 0px;
+    display: flex;
+    flex-wrap: wrap;
+    border-bottom: solid #dadada 1px;
+  }
+
+  /* 地図をクリア */
+  .btn-map-clear {
+    width: 50%;
+    text-align: center;
+  }
+
+  #map-clear {
+    font-size: medium;
+    width: 110px;
+  }
+
+  /* 地図を表示する */
+  .btn-map-show {
+    width: 50%;
+  }
+
+  #show-button {
+    font-size: medium;
+    width: 110px;
+  }
+
+  .btn {
+    width: 80px;
+    font-size: small;
+  }
+
+  .layer-header {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+  }
+
+  .layer-title {
+    padding-top: 4px;
+    padding-left: 8px;
+    width: 36%;
+  }
+
+  .layer-button {
+    width: 32%;
+  }
+
+  [data-action="select"] {
+    margin-left: 6px;
+  }
+
+  /*** custom checkboxes ***/
+  input[type="checkbox"] {
+    display: none;
+  }
+
+  /* FontAwesome を使用 */
+  input[type="checkbox"]+label:before {
+    font-family: FontAwesome;
+    display: inline-block;
+  }
+
+  /* 未選択のアイコン設定 */
+  input[type="checkbox"]+label:before {
+    background-color: #f5f5f5;
+    color: rgb(179, 179, 179);
+    margin-right: 5px;
+    content: "\f096";
+    /* 未選択のアイコン */
+    letter-spacing: 10px;
+  }
+
+  /* 選択済みのアイコン設定、およびテキストカラーと背景の設定 */
+  input[type="checkbox"]:checked+label:before {
+    margin-right: 5px;
+    content: "\f046";
+    /* 選択済みのアイコン */
+    font-size: 1rem;
+    letter-spacing: 5px;
+    /* スペース */
+    color: rgb(255, 255, 255);
+    /* テキストカラーを白に設定 */
+    background-color: #505050;
+    /* 背景色を黒に設定 */
+  }
+
+  .layer-container {
+    background-color: #505050;
+    color: white;
+    margin: 3px;
+    padding-left: 4px;
+    width: 46%;
+    border-radius: 5px;
+    font-size: 15px;
+  }
+
+  /*** custom radios ***/
+  input[name="flexRadioDefault"] {
+    display: none;
+  }
+
+  /* FontAwesome を使用 */
+  input[name="flexRadioDefault"]+label:before {
+    font-family: FontAwesome;
+    display: inline-block;
+  }
+
+  /* 未選択のアイコン設定 */
+  input[name="flexRadioDefault"]+label:before {
+    background-color: #f5f5f5;
+    color: rgb(179, 179, 179);
+    margin-right: 5px;
+    content: "\f096";
+    /* 未選択のアイコン */
+    letter-spacing: 10px;
+  }
+
+  /* 選択済みのアイコン設定、およびテキストカラーと背景の設定 */
+  input[name="flexRadioDefault"]:checked+label:before {
+    margin-right: 5px;
+    content: "\f046";
+    /* 選択済みのアイコン */
+    font-size: 1rem;
+    letter-spacing: 5px;
+    /* スペース */
+    color: rgb(255, 255, 255);
+    /* テキストカラーを白に設定 */
+    background-color: #505050;
+    /* 背景色を黒に設定 */
+  }
+
+  /* デフォルトのアイコン設定 */
+  .layer-container-checkbox {
+    color: rgb(255, 255, 255);
+    /* テキストカラーを白に設定 */
+    background-color: #505050;
+    /* 背景色を黒に設定 */
+    margin: 3px;
+    padding-left: 4px;
+    width: 46%;
+    border-radius: 5px;
+    font-size: 15px;
+  }
+
+  .layer-container-radio {
+    background-color: #f5f5f5;
+    color: rgb(179, 179, 179);
+    margin: 3px;
+    padding-left: 4px;
+    width: 46%;
+    border-radius: 5px;
+    font-size: 15px;
+  }
+
+  .form-check-sub {
+    flex: 1 0 40%;
+    box-sizing: border-box;
+    border-radius: 5px;
+    margin: 4px;
+  }
+
+  .form-check-input {
+    margin-left: 10px;
+  }
+
+  .form-check-label {
+    width: 100%;
+  }
+
+  /* legends */
+  .marker-color {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 2px;
+  }
+
+  /* 検索ボックス */
+  .leaflet-control-geocoder-form {
+    max-width: 340px;
+    min-width: 300px;
+    display: flex;
+    align-items: center;
+  }
+
+  .leaflet-control-geocoder-form input[type="text"] {
+    width: 78%;
+    height: 34px;
+    padding-left: 5px;
+    margin-right: 2%;
+    border: 1px solid #999999;
+    box-sizing: border-box;
+    color: #000;
+    outline: none;
+  }
+
+  .leaflet-control-geocoder-form input[type="submit"] {
+    width: 20%;
+    justify-content: center;
+    align-items: center;
+    height: 34px;
+    border: none;
+    background-color: #54545c;
+    color: #fff;
+    cursor: pointer;
+  }
+
+  /* モーダルウィンドウのスタイル */
+  .modal {
+    text-align: center;
+    display: none;
+    position: fixed;
+    z-index: 100;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+  }
+
+  .modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 400px;
+    position: relative;
+  }
+}
+
+/* スマートフォン用 */
+@media (max-width: 991px) {
+  #errorModal {
+    display: none;
+  }
+
+  /* * {
+    outline: 2px solid blue;
+  } */
+  html {
+    overflow-x: hidden;
+    margin: 0px;
+    height: 100%;
+    width: 100%;
+  }
+
+  body {
+    overflow-x: clip;
+    padding-top: 56px;
+    padding-bottom: 0px;
+    margin: 0px;
+    height: 100%;
+    width: 100%;
+  }
+
+  header {
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 10;
+  }
+
+  main {
+    margin: 0px;
+    height: 100%;
+    width: 100%;
+  }
+
+  #pc-nav {
+    display: none;
+  }
+
+  /* コンテナ全体 */
+  .container-main {
+    display: flex;
+    height: 100%;
+    width: 100%;
+  }
+
+  /* 左側 */
+  .container-left {
+    display: none;
+  }
+
+  .container-nav-left {
+    padding-left: 10px;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    /* 子要素を縦に配置 */
+  }
+
+  .header-left-container {
+    width: 100%;
+    height: auto;
+    margin: 0px;
+  }
+
+  .scroll-content {
+    width: 100%;
+    height: auto;
+    margin: 0px;
+    overflow-y: auto;
+  }
+
+  /* 右側 map */
+  .container-right {
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+  }
+
+  /* 左側レイヤー */
+  .btn-container {
+    padding: 10px 0px;
+    display: flex;
+    flex-wrap: wrap;
+    border-bottom: solid #dadada 1px;
+  }
+
+  /* 地図をクリア */
+  .btn-map-clear {
+    width: 50%;
+    text-align: center;
+  }
+
+  #map-clear-sm {
+    font-size: medium;
+    width: 120px;
+  }
+
+  /* 地図を表示する */
+  .btn-map-show {
+    width: 50%;
+  }
+
+  #show-button-sm {
+    font-size: medium;
+    width: 120px;
+  }
+
+  .btn {
+    width: 100px;
+    font-size: small;
+  }
+
+  .layer-header {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+  }
+
+  .layer-title {
+    padding-top: 4px;
+    padding-left: 8px;
+    width: 30%;
+  }
+
+  .layer-button {
+    width: 35%;
+  }
+
+  [data-action="select"] {
+    margin-left: 6px;
+    width: 80px;
+  }
+
+  [data-action="clear"] {
+    width: 80px;
+  }
+
+  /*** custom checkboxes ***/
+  input[type="checkbox"] {
+    display: none;
+  }
+
+  input[type="checkbox"]+label:before {
+    font-family: FontAwesome;
+    display: inline-block;
+  }
+
+  /* 未選択のアイコン設定 */
+  input[type="checkbox"]+label:before {
+    background-color: #f5f5f5;
+    color: rgb(179, 179, 179);
+    margin-right: 5px;
+    content: "\f096";
+    /* 未選択のアイコン */
+    letter-spacing: 10px;
+  }
+
+  /* 選択済みのアイコン設定、およびテキストカラーと背景の設定 */
+  input[type="checkbox"]:checked+label:before {
+    margin-right: 5px;
+    content: "\f046";
+    /* 選択済みのアイコン */
+    font-size: 1rem;
+    letter-spacing: 5px;
+    /* スペース */
+    color: rgb(255, 255, 255);
+    /* テキストカラーを白に設定 */
+    background-color: #505050;
+    /* 背景色を黒に設定 */
+  }
+
+  .layer-container {
+    background-color: #505050;
+    color: white;
+    margin: 3px;
+    padding-left: 4px;
+    width: 46%;
+    border-radius: 5px;
+    font-size: 15px;
+  }
+
+  /*** custom radios ***/
+  input[name="flexRadioDefault"] {
+    display: none;
+  }
+
+  /* FontAwesome を使用 */
+  input[name="flexRadioDefault"]+label:before {
+    font-family: FontAwesome;
+    display: inline-block;
+  }
+
+  /* 未選択のアイコン設定 */
+  input[name="flexRadioDefault"]+label:before {
+    background-color: #f5f5f5;
+    color: rgb(179, 179, 179);
+    margin-right: 5px;
+    content: "\f096";
+    /* 未選択のアイコン */
+    letter-spacing: 10px;
+  }
+
+  /* 選択済みのアイコン設定、およびテキストカラーと背景の設定 */
+  input[name="flexRadioDefault"]:checked+label:before {
+    margin-right: 5px;
+    content: "\f046";
+    /* 選択済みのアイコン */
+    font-size: 1rem;
+    letter-spacing: 5px;
+    /* スペース */
+    color: rgb(255, 255, 255);
+    /* テキストカラーを白に設定 */
+    background-color: #505050;
+    /* 背景色を黒に設定 */
+  }
+
+  /* デフォルトのアイコン設定 */
+  .layer-container-checkbox {
+    color: rgb(255, 255, 255);
+    /* テキストカラーを白に設定 */
+    background-color: #505050;
+    /* 背景色を黒に設定 */
+    margin: 3px;
+    padding-left: 4px;
+    width: 46%;
+    border-radius: 5px;
+    font-size: 15px;
+  }
+
+  .layer-container-radio {
+    background-color: #f5f5f5;
+    color: rgb(179, 179, 179);
+    margin: 3px;
+    padding-left: 4px;
+    width: 46%;
+    border-radius: 5px;
+    font-size: 15px;
+  }
+
+  .form-check-sub {
+    flex: 1 0 40%;
+    box-sizing: border-box;
+    border-radius: 5px;
+    margin: 4px;
+  }
+
+  .form-check-input {
+    margin-left: 10px;
+  }
+
+  .form-check-label {
+    width: 100%;
+  }
+
+  /* legends */
+  .marker-color {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 2px;
+  }
+
+  /* 検索ボックス */
+  .leaflet-control-geocoder-form {
+    max-width: 280px;
+    min-width: 240px;
+    display: flex;
+    align-items: center;
+  }
+
+  .leaflet-control-geocoder-form input[type="text"] {
+    width: 74%;
+    height: 34px;
+    padding-left: 5px;
+    margin-right: 2%;
+    border: 1px solid #999999;
+    box-sizing: border-box;
+    color: #000;
+    outline: none;
+  }
+
+  .leaflet-control-geocoder-form input[type="submit"] {
+    float: right;
+    width: 24%;
+    height: 34px;
+    border: 1px solid #54545c;
+    background-color: #54545c;
+    color: #fff;
+    cursor: pointer;
+  }
+
+  /* スマホの場合は、位置情報ボタンを非表示にする */
+  .leaflet-control-locate a {
+    display: none;
+  }
+
+  /* モーダルウィンドウのスタイル */
+  .modal {
+    text-align: center;
+    display: none;
+    position: fixed;
+    z-index: 100;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+  }
+
+  .modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 400px;
+    position: relative;
+  }
+}

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+    http-equiv="X-UA-Compatible" ontent="ie=edge">
+  <title>交通状況可視化マップ</title>
+
+  <!-- CDN Bootstrapを読み込む -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+  <!-- CSSファイルを読み込む -->
+  <link rel="stylesheet" href="./css/login.css">
+</head>
+
+<body>
+  <div id="errorModal" class="modal">
+    <div class="modal-content">
+      <i class="bi bi-exclamation-triangle-fill">
+        <span class="ms-1" id="errorMessage"></span>
+      </i>
+    </div>
+  </div>
+  <div id="errorModal-sm" class="modal">
+    <div class="modal-content">
+      <i class="bi bi-exclamation-triangle-fill">
+        <span class="ms-1" id="errorMessage-sm"></span>
+      </i>
+    </div>
+  </div>
+
+  <header>
+    <!-- PC用 -->
+    <nav class="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark" id="pc-nav">
+      <div class="container-fluid">
+        <a class="navbar-brand ms-2" href="#">くまもと事故マップ</a>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item ms-2 me-2">
+              <a class="nav-link" href="index.html">ホーム</a>
+            </li>
+            <li class="nav-item ms-2 me-2">
+            <li class="nav-item ms-2 me-2"><a class="nav-link" href="signup.html">新規登録</a></li>
+            <li class="nav-item ms-2 me-2"><a class="nav-link active" href="#">ログイン</a></li>
+            <li class="nav-item ms-2 me-2"><a class="nav-link" href="#" onclick="logout()">ログアウト</a></li>
+            </li>
+          </ul>
+          <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+            <li class="nav-item ms-2 me-2" style="min-width: 70px;">
+              <a class="nav-link" href="#" id="username_link"></a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- スマホ用 -->
+    <nav class="navbar navbar-dark bg-dark fixed-top" id="sm-nav">
+      <div class="container-fluid">
+        <a class="navbar-brand ms-2" href="#">頭文字G</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasDarkNavbar"
+          aria-controls="offcanvasDarkNavbar" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="offcanvas offcanvas-end text-bg-dark m-0" tabindex="-1" id="offcanvasDarkNavbar"
+          aria-labelledby="offcanvasDarkNavbarLabel">
+          <div class="offcanvas-header mt-3 ms-3 me-4 p-0">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item ms-2 me-2">
+                <a class="nav-link" href="index.html">ホーム</a>
+              </li>
+              <li class="nav-item ms-2 me-2">
+                <a class="nav-link" href="signup.html">新規登録</a>
+              </li>
+              <li class="nav-item ms-2 me-2">
+                <a class="nav-link active" href="#">ログイン</a>
+              </li>
+              <li class="nav-item ms-2 me-2">
+                <a class="nav-link" href="#" onclick="logout()">ログアウト</a>
+              </li>
+            </ul>
+            <ul class="navbar-nav ms-auto me-3 mb-2 mb-lg-0">
+              <li class="nav-item ms-2 me-2" style="min-width: 70px;">
+                <a class="nav-link" href="#" id="username_link-sm"></a>
+              </li>
+            </ul>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"
+              aria-label="Close"></button>
+          </div>
+
+    </nav>
+  </header>
+  <main>
+    <div class="container-main">
+      <div class="form-container">
+        <div class="form-login">
+          <form method="POST" action="./server/login.php" class="p-3">
+
+            <h1 class="h3 mb-3 fw-normal">ログイン</h1>
+
+            <div class="form-floating">
+              <input type="text" class="form-control" name="username" id="floatingInput1" placeholder="ユーザー名">
+              <label for="floatingInput1">ユーザー名</label>
+            </div>
+            <div class="form-floating">
+              <input type="password" class="form-control" name="password" id="floatingInput2" placeholder="パスワード">
+              <label for="floatingInput2">パスワード</label>
+            </div>
+
+            <button class="btn btn-dark p-2" type="submit" style="width: 40%; margin-top:10px;">ログイン</button>
+          </form>
+        </div>
+        <div class="signup-link">
+          <a href="signup.html">新規登録はこちら</a>
+        </div>
+      </div>
+    </div>
+  </main>
+  <script src="./login.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+    crossorigin="anonymous"></script>
+</body>
+
+</html>

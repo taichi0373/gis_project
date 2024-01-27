@@ -1,0 +1,253 @@
+@import url(//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css);
+
+/* パソコン用 */
+@media (min-width: 992px) {
+  #errorModal {
+    display: none;
+  }
+
+  /* * {
+    outline: 2px solid blue;
+  } */
+  html {
+    overflow-x: hidden;
+    margin: 0px;
+    height: 100%;
+    width: 100%;
+  }
+
+  body {
+    overflow-x: clip;
+    padding-bottom: 0px;
+    margin: 0px;
+    height: 100%;
+    width: 100%;
+  }
+
+  header {
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 10;
+  }
+
+  main {
+    margin: 0px;
+    height: 100%;
+    width: 100%;
+  }
+
+  /* コンテナ全体 */
+  .container-main {
+    position: relative;
+    height: 100%;
+    width: 100%;
+  }
+
+  .form-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  #sm-nav {
+    display: none;
+  }
+
+  #sm-layer {
+    display: none;
+  }
+
+  /* モーダルウィンドウのスタイル */
+  .modal {
+    text-align: center;
+    display: none;
+    position: fixed;
+    z-index: 100;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+  }
+
+  .modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 400px;
+    position: relative;
+  }
+
+  .modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 400px;
+    position: relative;
+  }
+
+  /* フォーム */
+  .form-title {
+    float: left;
+    margin-left: 20px;
+    margin-top: 15px;
+    margin-bottom: 10px;
+  }
+
+  form {
+    min-width: 500px;
+  }
+
+  .form-signup {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+
+  .input-group {
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 30px;
+    height: 60px;
+  }
+
+  .form-floating {
+    display: flex;
+    align-items: center;
+    height: 100%;
+  }
+
+  .input-group-text {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    height: 100%;
+  }
+}
+
+/* スマートフォン用 */
+@media (max-width: 991px) {
+  #errorModal {
+    display: none;
+  }
+
+  html {
+    overflow-x: hidden;
+    margin: 0px;
+    height: 100%;
+    width: 100%;
+  }
+
+  body {
+    overflow-x: clip;
+    padding-bottom: 0px;
+    margin: 0px;
+    height: 100%;
+    width: 100%;
+  }
+
+  header {
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 10;
+  }
+
+  main {
+    margin: 0px;
+    height: 100%;
+    width: 100%;
+  }
+
+  /* コンテナ全体 */
+  .container-main {
+    position: relative;
+    height: 100%;
+    width: 100%;
+  }
+
+  .form-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  #pc-nav {
+    display: none;
+  }
+
+  #sm-layer {
+    height: 40px;
+    width: 100%;
+    padding: 5px 0px;
+    background-color: #fff;
+    margin-top: 56px;
+  }
+
+  /* モーダルウィンドウのスタイル */
+  .modal {
+    text-align: center;
+    display: none;
+    position: fixed;
+    z-index: 100;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+  }
+
+  /* フォーム */
+
+  .form-title {
+    float: left;
+    margin-left: 20px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+
+  form {
+    min-width: 280px;
+  }
+
+  .form-signup {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+
+  .input-group {
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 30px;
+    height: 60px;
+  }
+
+  .form-floating {
+    display: flex;
+    align-items: center;
+    height: 100%;
+  }
+
+  .input-group-text {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    height: 100%;
+  }
+}

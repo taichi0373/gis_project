@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+    http-equiv="X-UA-Compatible" ontent="ie=edge">
+  <title>交通状況可視化マップ</title>
+
+  <!-- CDN Bootstrapを読み込む -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+  <!-- CSSファイルを読み込む -->
+  <link rel="stylesheet" href="./css/signup.css">
+</head>
+
+<body>
+  <div id="errorModal" class="modal">
+    <div class="modal-content">
+      <i class="bi bi-exclamation-triangle-fill">
+        <span class="ms-1" id="errorMessage"></span>
+      </i>
+    </div>
+  </div>
+  <div id="errorModal-sm" class="modal">
+    <div class="modal-content">
+      <i class="bi bi-exclamation-triangle-fill">
+        <span class="ms-1" id="errorMessage-sm"></span>
+      </i>
+    </div>
+  </div>
+
+  <header>
+    <!-- PC用 -->
+    <nav class="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark" id="pc-nav">
+      <div class="container-fluid">
+        <a class="navbar-brand ms-2" href="#">くまもと事故マップ</a>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item ms-2 me-2">
+              <a class="nav-link" href="index.html">ホーム</a>
+            </li>
+            <li class="nav-item ms-2 me-2">
+            <li class="nav-item ms-2 me-2"><a class="nav-link active" href="#">新規登録</a></li>
+            <li class="nav-item ms-2 me-2"><a class="nav-link" href="login.html">ログイン</a></li>
+            <li class="nav-item ms-2 me-2"><a class="nav-link" href="#" onclick="logout()">ログアウト</a></li>
+            </li>
+          </ul>
+          <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+            <li class="nav-item ms-2 me-2" style="min-width: 70px;">
+              <a class="nav-link" href="#" id="username_link"></a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- スマホ用 -->
+    <nav class="navbar navbar-dark bg-dark fixed-top" id="sm-nav">
+      <div class="container-fluid">
+        <a class="navbar-brand ms-2" href="#">頭文字G</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasDarkNavbar"
+          aria-controls="offcanvasDarkNavbar" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="offcanvas offcanvas-end text-bg-dark m-0" tabindex="-1" id="offcanvasDarkNavbar"
+          aria-labelledby="offcanvasDarkNavbarLabel">
+          <div class="offcanvas-header mt-3 ms-3 me-4 p-0">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item ms-2 me-2">
+                <a class="nav-link" href="index.html">ホーム</a>
+              </li>
+              <li class="nav-item ms-2 me-2">
+                <a class="nav-link active" href="#">新規登録</a>
+              </li>
+              <li class="nav-item ms-2 me-2">
+                <a class="nav-link" href="login.html">ログイン</a>
+              </li>
+              <li class="nav-item ms-2 me-2">
+                <a class="nav-link" href="#" onclick="logout()">ログアウト</a>
+              </li>
+            </ul>
+            <ul class="navbar-nav ms-auto me-3 mb-2 mb-lg-0">
+              <li class="nav-item ms-2 me-2" style="min-width: 70px;">
+                <a class="nav-link" href="#" id="username_link-sm"></a>
+              </li>
+            </ul>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"
+              aria-label="Close"></button>
+          </div>
+
+    </nav>
+  </header>
+  <!-- PC用 -->
+  <main>
+    <div class="container-main">
+      <div class="form-container">
+        <div class="form-signup">
+          <form class="form" role="form" autocomplete="off" id="formLogin" novalidate="" method="POST"
+            action="./server/signup.php">
+            <input id="csrf_token" name="csrf_token" type="hidden"
+              value="IjBkMTliYzNkYzI2YmEzOWVlMmUwYmEwZmRhZjZmMDk4MWI0Njc5ZDIi.ZWWKLQ.rCAuOjmvzPpS4gqT2D6ZGWvkycg">
+            <!-- csrfトークンを追加 -->
+
+            <h1 class="h3 mb-5 fw-normal">新規登録</h1>
+
+            <div class="input-group">
+              <div class="form-floating">
+                <input type="text" class="form-control" id="username" placeholder="ユーザー名">
+                <label for="username">ユーザー名</label>
+              </div>
+            </div>
+
+            <div class="input-group">
+              <div class="form-floating">
+                <input type="password" class="form-control" id="password" data-toggle="password" placeholder="パスワード">
+                <label for="password">パスワード</label>
+              </div>
+              <span class="input-group-text" type="button" id="togglePassword">
+                <i class="bi bi-eye"></i>
+              </span>
+            </div>
+
+
+            <div class="input-group">
+              <div class="form-floating">
+                <input type="password" class="form-control" id="confirm" data-toggle="password"
+                  placeholder="パスワード（再確認）">
+                <label for="confirm">パスワード（再確認）</label>
+              </div>
+              <span class="input-group-text" type="button" id="toggleConfirmPassword">
+                <i class="bi bi-eye"></i>
+              </span>
+            </div>
+
+            <input class="btn btn-dark" id="submit" name="submit" type="submit" value="新規登録">
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="./signup.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+    crossorigin="anonymous"></script>
+</body>
+
+</html>
