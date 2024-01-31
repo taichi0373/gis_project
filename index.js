@@ -386,7 +386,6 @@ legend.onAdd = function (map) {
   return div;
 };
 legend.addTo(map);
-
 // マーカー
 var MarkerLayer = L.layerGroup();
 // ヒートマップ
@@ -406,11 +405,14 @@ var heatLayer = L.heatLayer(heatData, {
   scaleRadius: true,
   useLocalExtrema: true,
 });
-
+var switchCheck = false;
 // zoomendイベントのリスナーを追加
 map.on("zoomend", function () {
   var currentZoom = map.getZoom();
-  if (currentZoom <= 16) {
+  if (switchCheck) {
+    map.removeLayer(heatLayer);
+    MarkerLayer.addTo(map);
+  } else if (currentZoom <= 16) {
     map.removeLayer(MarkerLayer);
     heatLayer.addTo(map);
   } else {
@@ -500,6 +502,8 @@ var LayerControl = L.control.layers(baseLayers, null, { position: 'bottomleft' }
 
 document.addEventListener("DOMContentLoaded", function () {
   // PC用
+  const switchButton = document.querySelectorAll(".toggle");
+
   const modal = document.getElementById("errorModal");
   const errorMessageElement = document.getElementById("errorMessage");
 
@@ -524,6 +528,22 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const button_show_sm = document.getElementById("show-button-sm");
   const button_mapclear_sm = document.getElementById("map-clear-sm");
+
+  // コメントスイッチ
+  switchButton.forEach(function (toggle) {
+    toggle.addEventListener('click', function () {
+      toggle.classList.toggle('checked');
+      var input = document.querySelector('input[name="check"]');
+      if (!input.checked) {
+        // チェックが入っていない場合
+        document.querySelector('.toggle input').checked = true;
+      } else {
+        // チェックが入っている場合
+        document.querySelector('.toggle input').checked = false;
+        switchCheck = false;
+      }
+    });
+  });
 
   function displayErrorMessage(message) {
     function closeErrorMessage() {
@@ -604,12 +624,15 @@ document.addEventListener("DOMContentLoaded", function () {
   button_show.addEventListener("click", function () {
     // マーカー座標のセット
     const addedMarkerCoordinates = new Set();
-    let duplicateCount = 0;
     MarkerLayer.clearLayers();
     heatData.length = 0;
 
     const selected_years = [];
     const selected_layers = [];
+    const selected_switch = document.querySelector('.toggle input').checked;
+    if (selected_switch) {
+      switchCheck = true;
+    }
     var check_element1 = false;
     var check_element2 = false;
 
@@ -638,7 +661,8 @@ document.addEventListener("DOMContentLoaded", function () {
       for (const selected_year of selected_years) {
         const worker = new Worker("worker_index.js");
         // メッセージを送信
-        worker.postMessage({ layer: selected_layers, year: selected_year });
+        worker.postMessage({ layer: selected_layers, year: selected_year, switch: selected_switch });
+        console.log(selected_switch)
         // Web Workerからのメッセージを受信
         worker.onmessage = function (event) {
           if (event.data.status == "success") {
@@ -667,9 +691,13 @@ document.addEventListener("DOMContentLoaded", function () {
               addMarker.accident_id = accident_id;
               MarkerLayer.addLayer(addMarker);
               heatData.push([latitude, longitude, 0.3]);
+              if (document.querySelector('.toggle input').checked) {
+                MarkerLayer.addTo(map);
+              } else {
+                heatLayer.addTo(map);
+                heatLayer.redraw();
+              }
 
-              heatLayer.addTo(map);
-              heatLayer.redraw();
             } else {
               // console.log("同じ座標"); // 同じ座標が既に存在する場合のカウントを増やす
             }
@@ -751,6 +779,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const selected_years_sm = [];
     const selected_layers_sm = [];
+    const selected_switch_sm = document.querySelector('.toggle input').checked;
+    if (selected_switch_sm) {
+      switchCheck = true;
+    }
     var check_element1 = false;
     var check_element2 = false;
 
@@ -783,6 +815,7 @@ document.addEventListener("DOMContentLoaded", function () {
         worker.postMessage({
           layer: selected_layers_sm,
           year: selected_year_sm,
+          switch: selected_switch_sm,
         });
         // Web Workerからのメッセージを受信
         worker.onmessage = function (event) {
@@ -809,9 +842,12 @@ document.addEventListener("DOMContentLoaded", function () {
               addMarker.accident_id = accident_id_sm;
               MarkerLayer.addLayer(addMarker);
               heatData.push([latitude_sm, longitude_sm, 0.3]);
-
-              heatLayer.addTo(map);
-              heatLayer.redraw();
+              if (document.querySelector('.toggle input').checked) {
+                MarkerLayer.addTo(map);
+              } else {
+                heatLayer.addTo(map);
+                heatLayer.redraw();
+              }
             } else {
               // console.log("同じ座標"); // 同じ座標が既に存在する場合のカウントを増やす
             }

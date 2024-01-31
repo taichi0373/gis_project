@@ -154,10 +154,12 @@ var sidewalk_road_division_dict = {
 self.addEventListener("message", function (event) {
   const layer_values = event.data.layer;
   const year_value = event.data.year;
+  const switch_value = event.data.switch;
 
   let fd = new FormData();
   fd.append("value", JSON.stringify(layer_values));
   fd.append("selected_year", year_value);
+  fd.append("selected_switch", switch_value);
   const url = "server/server_index.php";
   // FetchAPIを使用してPOSTリクエストを送信
   fetch(url, {
@@ -252,7 +254,7 @@ self.addEventListener("message", function (event) {
                                               </tbody>
                                               </table>
                                               <button type="button" class="btn btn-outline-dark" onclick='showPage(2, ${coord.id
-            })' style="width:60%;">次のページ</button>
+            })' style="width:60%;">コメント</button>
                                             </div>
 
                                             <div id='page-2' style='display: none; width:100%; height:400px;'>

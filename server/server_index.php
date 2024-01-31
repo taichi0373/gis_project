@@ -2,7 +2,7 @@
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $layer_values_json = $_POST['value'];
     $selected_year = $_POST['selected_year'];
-
+    $selected_switch = $_POST['selected_switch'];
     $selected_layer = json_decode($layer_values_json, true);
 
     $array = [
@@ -90,10 +90,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (isset($array[$selected_year])) {
             $orConditions[] = $array[$selected_year];
         }
-        // 最終的なクエリを組み立てる
-        $sqlQuery = "SELECT * FROM traffic_accident_kumamoto WHERE " . implode(' AND ', $orConditions);
 
-        // echo $sqlQuery;
+        // 最終的なクエリを組み立てる
+        if ($selected_switch == "true") {
+            $sqlQuery = "SELECT * FROM traffic_accident_kumamoto 
+            INNER JOIN comments ON traffic_accident_kumamoto.id = comments.accident_id 
+            WHERE " . implode(' AND ', $orConditions);
+        } else {
+            $sqlQuery = "SELECT * FROM traffic_accident_kumamoto WHERE " . implode(' AND ', $orConditions);
+        }
+
+
         // クエリを実行して結果を取得
         $result = $conn->query($sqlQuery);
 
