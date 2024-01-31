@@ -625,6 +625,8 @@ document.addEventListener("DOMContentLoaded", function () {
     // マーカー座標のセット
     const addedMarkerCoordinates = new Set();
     MarkerLayer.clearLayers();
+    map.removeLayer(MarkerLayer);
+    map.removeLayer(heatLayer);
     heatData.length = 0;
 
     const selected_years = [];
@@ -662,7 +664,6 @@ document.addEventListener("DOMContentLoaded", function () {
         const worker = new Worker("worker_index.js");
         // メッセージを送信
         worker.postMessage({ layer: selected_layers, year: selected_year, switch: selected_switch });
-        console.log(selected_switch)
         // Web Workerからのメッセージを受信
         worker.onmessage = function (event) {
           if (event.data.status == "success") {
@@ -775,6 +776,8 @@ document.addEventListener("DOMContentLoaded", function () {
   button_show_sm.addEventListener("click", function () {
     const addedMarkerCoordinates_sm = new Set();
     MarkerLayer.clearLayers();
+    map.removeLayer(MarkerLayer);
+    map.removeLayer(heatLayer);
     heatData.length = 0;
 
     const selected_years_sm = [];
@@ -845,6 +848,7 @@ document.addEventListener("DOMContentLoaded", function () {
               if (document.querySelector('.toggle input').checked) {
                 MarkerLayer.addTo(map);
               } else {
+
                 heatLayer.addTo(map);
                 heatLayer.redraw();
               }
